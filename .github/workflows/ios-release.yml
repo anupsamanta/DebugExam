@@ -31,10 +31,10 @@ jobs:
         with:
           ruby-version: '3.2.0'
 
-      - name: Update RubyGems and Bundler
+      - name: Update RubyGems and Install Bundler
         run: |
           sudo gem update --system
-          sudo gem install bundler:2.3.26
+          sudo gem install bundler
 
       - name: Install Bundler dependencies
         run: |

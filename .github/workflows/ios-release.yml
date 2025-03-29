@@ -1,66 +1,84 @@
-name: Build iOS Release
+name: iOS CI/CD
 
 on:
   push:
     branches:
-      - main  # Change this if your branch is different
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-latest # GitHub macOS runner
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set Up Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.1.0
 
-      - name: Install Dependencies
+      - name: Install dependencies
+        run: |
+          npm install
+          cd ios && pod install && cd ..
+
+      - name: Set up Ruby and Bundler
+        run: |
+          sudo gem install bundler
+          cd ios && bundle install && cd ..
+
+      - name: Set up Fastlane
+        run: |
+          cd ios && bundle exec fastlane install_plugins && cd ..
+
+      - name: Build iOS app
         run: |
           cd ios
-          pod install --repo-update
-
-      - name: Decode Certificates and Profiles
-        env:
-          P12_BASE64: ${{ secrets.IOS_CERTIFICATE }}
-          MOBILEPROVISION_BASE64: ${{ secrets.IOS_PROVISION }}
-        run: |
-          echo "$P12_BASE64" | base64 --decode > ios_certificate.p12
-          echo "$MOBILEPROVISION_BASE64" | base64 --decode > ios_profile.mobileprovision
-
-      - name: Import Certificate
-        run: |
-          security create-keychain -p "tempPassword" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "tempPassword" build.keychain
-          security import ios_certificate.p12 -k build.keychain -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "tempPassword" build.keychain
-
-      - name: Move Provisioning Profile
-        run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          mv ios_profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-
-      - name: Build IPA
-        run: |
-          cd ios
-          xcodebuild -workspace YourApp.xcworkspace \
-          -scheme YourApp \
-          -sdk iphoneos \
-          -configuration Release \
-          -archivePath $PWD/build/YourApp.xcarchive archive
+          xcodebuild clean archive \
+            -workspace DebugExam.xcworkspace \
+            -scheme YourScheme \
+            -archivePath $PWD/build/DebugExam.xcarchive \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY="iPhone Developer" \
+            DEVELOPMENT_TEAM="YOUR_TEAM_ID" \
+            PROVISIONING_PROFILE_SPECIFIER="YOUR_PROVISIONING_PROFILE"
 
       - name: Export IPA
         run: |
           cd ios
           xcodebuild -exportArchive \
-          -archivePath $PWD/build/YourApp.xcarchive \
-          -exportOptionsPlist exportOptions.plist \
-          -exportPath $PWD/build/
+            -archivePath $PWD/build/DebugExam.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath $PWD/build/output
 
-      - name: Upload IPA Artifact
+      - name: Upload IPA as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-app
-          path: ios/build/*.ipa
+          name: iOS-App
+          path: ios/build/output/*.ipa
+
+  deploy:
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload IPA from Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: iOS-App
+          path: ios/build/output
+
+      - name: Deploy to TestFlight
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+        run: |
+          cd ios
+          fastlane run upload_to_testflight

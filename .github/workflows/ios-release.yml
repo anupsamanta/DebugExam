@@ -26,14 +26,25 @@ jobs:
           npm install
           cd ios && pod install && cd ..
 
-      - name: Set up Ruby and Bundler
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '3.3.0'
+
+      - name: Update Bundler
+        run: sudo gem install bundler
+
+      - name: Install Bundler dependencies
         run: |
-          sudo gem install bundler
-          cd ios && bundle install && cd ..
+          cd ios
+          bundle install
+          cd ..
 
       - name: Set up Fastlane
         run: |
-          cd ios && bundle exec fastlane install_plugins && cd ..
+          cd ios
+          bundle exec fastlane install_plugins
+          cd ..
 
       - name: Build iOS app
         run: |

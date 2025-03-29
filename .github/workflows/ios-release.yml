@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest # GitHub macOS runner
+    runs-on: macos-latest # Uses macOS runner
 
     steps:
       - name: Checkout repository
@@ -26,27 +26,10 @@ jobs:
           npm install
           cd ios && pod install && cd ..
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2.0'
-
-      - name: Update RubyGems and Install Bundler
+      - name: Set up Ruby and Bundler
         run: |
-          sudo gem update --system
           sudo gem install bundler
-
-      - name: Install Bundler dependencies
-        run: |
-          cd ios
-          bundle install
-          cd ..
-
-      - name: Set up Fastlane
-        run: |
-          cd ios
-          bundle exec fastlane install_plugins
-          cd ..
+          cd ios && bundle install && cd ..
 
       - name: Build iOS app
         run: |
@@ -57,8 +40,8 @@ jobs:
             -archivePath $PWD/build/DebugExam.xcarchive \
             -destination 'generic/platform=iOS' \
             CODE_SIGN_IDENTITY="iPhone Developer" \
-            DEVELOPMENT_TEAM="489TWMH65V" \
-            PROVISIONING_PROFILE_SPECIFIER="skillwizz_partner_AddHoc"
+            DEVELOPMENT_TEAM="${{ secrets.IOS_DEVELOPMENT_TEAM }}" \
+            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_PROVISIONING_PROFILE }}"
 
       - name: Export IPA
         run: |
@@ -81,17 +64,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Upload IPA from Artifact
+      - name: Download IPA from Artifact
         uses: actions/download-artifact@v4
         with:
           name: iOS-App
           path: ios/build/output
 
-      - name: Deploy to TestFlight
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-        run: |
-          cd ios
-          fastlane run upload_to_testflight
+      # - name: Deploy to TestFlight
+      #   env:
+      #     APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      #     APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      #     APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+      #   run: |
+      #     cd ios
+      #     fastlane run upload_to_testflight

@@ -1,0 +1,50 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main  # Change this if using a different branch
+
+jobs:
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java and Gradle
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 18.0.1.1  # Use the version your project requires
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.1.0
+
+      - name: Install Dependencies
+        run: yarn install  # Use `npm install` if you prefer npm
+
+      - name: Decode Keystore File
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/my-release-key.jks
+
+      - name: Build Release APK
+        env:
+          MYAPP_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          MYAPP_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          MYAPP_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          cd android
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: android/app/build/outputs/apk/release/app-release.apk

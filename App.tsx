@@ -31,6 +31,7 @@ function App(): React.JSX.Element {
   };
 
   const testLog = () =>{
+    alert("hi")
     console.log("Hr my latest log =========")
   }
   
@@ -90,7 +91,7 @@ function App(): React.JSX.Element {
             paddingHorizontal: safePadding,
             paddingBottom: safePadding,
           }}>
-          <Text onPress={testLog}>Add Log</Text>
+          <Text onPress={testLog}>Add Log to test</Text>
           <Text onPress={callAPI}>Call API</Text>
           <Text>{counter}</Text>
           <View style = {{flexDirection : 'row'}}>

@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 18.0.1.1  # Use the version your project requires
+          java-version: 18  # Use the version your project requires
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

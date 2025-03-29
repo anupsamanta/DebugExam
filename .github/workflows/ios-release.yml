@@ -53,12 +53,12 @@ jobs:
           cd ios
           xcodebuild clean archive \
             -workspace DebugExam.xcworkspace \
-            -scheme YourScheme \
+            -scheme DebugExam \
             -archivePath $PWD/build/DebugExam.xcarchive \
             -destination 'generic/platform=iOS' \
             CODE_SIGN_IDENTITY="iPhone Developer" \
-            DEVELOPMENT_TEAM="YOUR_TEAM_ID" \
-            PROVISIONING_PROFILE_SPECIFIER="YOUR_PROVISIONING_PROFILE"
+            DEVELOPMENT_TEAM="489TWMH65V" \
+            PROVISIONING_PROFILE_SPECIFIER="skillwizz_partner_AddHoc"
 
       - name: Export IPA
         run: |

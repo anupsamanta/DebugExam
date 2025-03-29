@@ -1,6 +1,9 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+project.ext.react = [
+    enableHermes: true  // Set this to true to enable Hermes
+]
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -116,4 +119,7 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    debugImplementation 'com.facebook.flipper:flipper:0.182.0'
+    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.182.0'
+    debugImplementation 'com.facebook.flipper:flipper-fresco-plugin:0.182.0'
 }

@@ -27,9 +27,9 @@ jobs:
           cd ios && pod install && cd ..
 
       - name: Set up Ruby
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3.0'
+          ruby-version: '3.2.0'
 
       - name: Update Bundler
         run: sudo gem install bundler

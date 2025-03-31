@@ -24,12 +24,16 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install
-          cd ios && pod install && cd ..
+          cd ios
+          gem install cocoapods
+          pod install
+          cd ..
 
-      - name: Set up Ruby and Bundler
-        run: |
-          gem install bundler:2.3.0 # Specify the latest version
-          cd ios && bundle install && cd ..
+      # - name: Set up Ruby and Bundler
+      #   run: |
+      #     gem install bundler --no-document
+      #     bundle config set path 'vendor/bundle'
+      #     cd ios && bundle install && cd ..
 
       - name: Build iOS app
         run: |
@@ -56,16 +60,3 @@ jobs:
         with:
           name: iOS-App
           path: ios/build/output/*.ipa
-
-  deploy:
-    needs: build
-    runs-on: macos-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download IPA from Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: iOS-App
-          path: ios/build/output

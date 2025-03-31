@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest # Uses macOS runner
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -28,7 +28,7 @@ jobs:
 
       - name: Set up Ruby and Bundler
         run: |
-          sudo gem install bundler
+          gem install bundler:2.3.0 # Specify the latest version
           cd ios && bundle install && cd ..
 
       - name: Build iOS app
@@ -69,12 +69,3 @@ jobs:
         with:
           name: iOS-App
           path: ios/build/output
-
-      # - name: Deploy to TestFlight
-      #   env:
-      #     APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-      #     APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-      #     APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-      #   run: |
-      #     cd ios
-      #     fastlane run upload_to_testflight

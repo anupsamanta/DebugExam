@@ -11,10 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Run Tests
-      #   run: |
-      #     npm ci
-      #     npm test -- --ci --passWithNoTests
 
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -32,6 +28,10 @@ jobs:
 
       - name: Install Dependencies
         run: yarn install  # Use `npm install` if you prefer npm
+
+      - name: Run Tests
+        run: |
+          yarn test --ci --passWithNoTests
 
       - name: Decode Keystore File
         env:

@@ -29,6 +29,28 @@ jobs:
       - name: Install Dependencies
         run: yarn install  # Use `npm install` if you prefer npm
 
+      - name: Auto-Increment App Version
+        run: |
+          VERSION_CODE=$(grep "versionCode" android/app/build.gradle | awk '{print $2}')
+          NEW_VERSION_CODE=$((VERSION_CODE + 1))
+          VERSION_NAME=$(grep "versionName" android/app/build.gradle | awk -F '"' '{print $2}')
+          NEW_VERSION_NAME=$(echo $VERSION_NAME | awk -F. -v OFS=. '{$NF+=1; print}')
+          
+          # Update build.gradle
+          sed -i "s/versionCode $VERSION_CODE/versionCode $NEW_VERSION_CODE/" android/app/build.gradle
+          sed -i "s/versionName \"$VERSION_NAME\"/versionName \"$NEW_VERSION_NAME\"/" android/app/build.gradle
+          
+          echo "Updated versionCode to $NEW_VERSION_CODE"
+          echo "Updated versionName to $NEW_VERSION_NAME"
+
+      - name: Commit Version Changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add android/app/build.gradle
+          git commit -m "CI: Bump version to $NEW_VERSION_NAME ($NEW_VERSION_CODE)"
+          git push
+
       - name: Run Tests
         run: |
           yarn test --ci --passWithNoTests
@@ -52,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-arm64-v8a-release-apk
-          path: android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
+          path: android/app/build/outputs/apk/release/app-arm64-v8a-release.apk #As per architecture
         # with:
         #   name: app-release-apk
         #   path: android/app/build/outputs/apk/release/app-release.apk

@@ -83,7 +83,6 @@ android {
     namespace "com.debugexam"
     defaultConfig {
         applicationId "com.debugexam"
-        resConfigs "en", "hdpi", "xhdpi" 
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -92,14 +91,6 @@ android {
     packagingOptions {
         jniLibs {
             useLegacyPackaging true
-        }
-    }
-    splits {
-        abi {
-            enable true
-            reset()
-            include 'armeabi-v7a', 'arm64-v8a', 'x86'
-            universalApk false
         }
     }
     signingConfigs {
@@ -115,6 +106,14 @@ android {
         keyAlias MYAPP_KEY_ALIAS
         keyPassword MYAPP_KEY_PASSWORD
     }
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86'
+            universalApk false
+        }
     }
     buildTypes {
         debug {

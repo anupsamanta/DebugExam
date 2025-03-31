@@ -46,6 +46,7 @@ jobs:
             CODE_SIGN_IDENTITY="iPhone Developer" \
             DEVELOPMENT_TEAM="${{ secrets.IOS_DEVELOPMENT_TEAM }}" \
             PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_PROVISIONING_PROFILE }}"
+            CODE_SIGN_STYLE=Automatic
 
       - name: Export IPA
         run: |
@@ -54,7 +55,7 @@ jobs:
             -archivePath $PWD/build/DebugExam.xcarchive \
             -exportOptionsPlist exportOptions.plist \
             -exportPath $PWD/build/output
-            
+
 
       - name: Upload IPA as Artifact
         uses: actions/upload-artifact@v4

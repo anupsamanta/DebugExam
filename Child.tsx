@@ -18,7 +18,7 @@ const WelcomeScreen = () => {
   }
   return (
     <View style={styles.view}>
-      <Text style={styles.welcomeText}>Welcome to<Text
+      <Text style={styles.welcomeText}>Welcome to child<Text
           style={{color: 'rgb(171, 91, 85)', textDecorationLine: 'underline'}}
           onPress={() => Linking.openURL('https://code-b.dev')}>CODEB {' '}
         </Text>

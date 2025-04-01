@@ -54,6 +54,7 @@ jobs:
             -archivePath $PWD/build/DebugExam.xcarchive \
             -exportOptionsPlist exportOptions.plist \
             -exportPath $PWD/build/output
+            -allowProvisioningUpdates
 
 
       - name: Upload IPA as Artifact
@@ -61,3 +62,6 @@ jobs:
         with:
           name: iOS-App
           path: ios/build/output/*.ipa
+
+
+

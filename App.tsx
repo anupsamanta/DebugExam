@@ -133,7 +133,7 @@
  * @format
  */
 
-import React, {useState} from 'react';
+import React, {useState, createContext} from 'react';
 import {
   Linking,
   StyleSheet,
@@ -143,7 +143,7 @@ import {
   View,
 } from 'react-native';
 
-const WelcomeScreen = () => {
+const WelcomeScreen1 = () => {
   return (
     <View style={styles.view}>
       <Text style={styles.welcomeText}>Welcome to<Text
@@ -154,11 +154,13 @@ const WelcomeScreen = () => {
     </View>
   );
 };
-
+import WelcomeScreen from './Child';
+export let DataContext = createContext('')
 const LoginScreen = (): React.JSX.Element => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [data, setData] = useState("No Value")
   const handleSubmitPress = () => {
     if (username === '' || password === '') {
       setMessage('Please provide all values');
@@ -171,7 +173,7 @@ const LoginScreen = (): React.JSX.Element => {
     }
   };
   return (
-    <View>
+    <View style = {{flex:1}}>
       <TextInput
         placeholder="Enter username"
         autoCapitalize="none"
@@ -190,10 +192,14 @@ const LoginScreen = (): React.JSX.Element => {
         <Text>LOGIN</Text>
       </TouchableOpacity>
       {message === 'SUCCESS' ? (
-        <Text><WelcomeScreen /></Text>
+        <Text><WelcomeScreen1 /></Text>
       ) : (
         <View><Text>{message}</Text></View>
       )}
+      <DataContext.Provider value = {{data,setData}} > 
+      <WelcomeScreen />
+      <Text>{data}</Text>
+      </DataContext.Provider>
     </View>
   );
 };

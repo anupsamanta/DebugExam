@@ -11,14 +11,16 @@ import {
 import { DataContext } from './App';
 
 const WelcomeScreen = () => {
-  let {data, setData}  = useContext(DataContext)
-
+  let context  = useContext(DataContext)
+  if (!context) {
+    throw new Error("ChildComponent must be used within an AppProvider");
+  }
   const updateValue = () =>{
-    setData("Value is updated")
+    context.setData("Value is updated")
   }
   return (
     <View style={styles.view}>
-      <Text style={styles.welcomeText}>Welcome to child<Text
+      <Text style={styles.welcomeText}>Welcome to child2<Text
           style={{color: 'rgb(171, 91, 85)', textDecorationLine: 'underline'}}
           onPress={() => Linking.openURL('https://code-b.dev')}>CODEB {' '}
         </Text>

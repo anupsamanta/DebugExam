@@ -143,6 +143,11 @@ import {
   View,
 } from 'react-native';
 
+interface AppContextType {
+  data: string;
+  setData: React.Dispatch<React.SetStateAction<string>>;
+}
+
 const WelcomeScreen1 = () => {
   return (
     <View style={styles.view}>
@@ -155,7 +160,8 @@ const WelcomeScreen1 = () => {
   );
 };
 import WelcomeScreen from './Child';
-export let DataContext = createContext('')
+// export let DataContext = createContext('')
+export const DataContext = createContext<AppContextType | undefined>(undefined);
 const LoginScreen = (): React.JSX.Element => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
